@@ -1,0 +1,12 @@
+
+services:
+  - type: web
+    name: overnight-radar-5001
+    runtime: python
+    plan: free
+    buildCommand: ""
+    startCommand: python server.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
