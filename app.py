@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import argparse
@@ -159,11 +160,27 @@ def fetch_twse_prices(day: str) -> dict[str, dict]:
         previous = close - change
         prices[stock_id] = {
             "stock_name": row[indexes["證券名稱"]].strip(),
+            "open": number(row[indexes["開盤價"]]),
+            "high": number(row[indexes["最高價"]]),
+            "low": number(row[indexes["最低價"]]),
             "close": close,
             "change_pct": change / previous * 100 if previous else 0,
             "volume": number(row[indexes["成交股數"]], int) // 1000,
         }
     return prices
+
+
+def fetch_next_twse_prices(day: str) -> tuple[dict[str, dict], str]:
+    cursor = datetime.strptime(day, "%Y-%m-%d").date()
+    for offset in range(1, 11):
+        candidate = (cursor + timedelta(days=offset)).isoformat()
+        try:
+            prices = fetch_twse_prices(candidate)
+        except (OSError, RuntimeError, urllib.error.URLError):
+            continue
+        if prices:
+            return prices, candidate
+    raise RuntimeError("找不到下一個交易日行情")
 
 
 def fetch_twse_latest_date() -> str:
