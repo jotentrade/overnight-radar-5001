@@ -1,7 +1,9 @@
+
 from __future__ import annotations
 
 import json
 import mimetypes
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -98,5 +100,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print("隔日沖雷達已啟動：http://127.0.0.1:5001")
-    ThreadingHTTPServer(("127.0.0.1", 5001), Handler).serve_forever()
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "5001"))
+    print(f"隔日沖雷達已啟動：http://{host}:{port}")
+    ThreadingHTTPServer((host, port), Handler).serve_forever()
